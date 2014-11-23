@@ -5,7 +5,7 @@
 int main(int argc, char *argv[]) {
 
   if (argc < 2) {
-    fprintf(stderr, "Usage: prog-name [file]\n");
+    fprintf(stderr, "Usage: %s [program]\n", argv[0]);
     return 1;
   }
 
