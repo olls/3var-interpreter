@@ -94,7 +94,6 @@ int main(int argc, char *argv[]) {
         r = a * b;
         break;
 
-
       case '/': // Divides A by B, stores in R
         r = a / b;
         break;
