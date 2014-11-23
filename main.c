@@ -222,7 +222,6 @@ int main(int argc, char *argv[]) {
       case '`': // Causes the interpreter to ignore the next character
         fgetc(file);
         break;
-
     }
   }
 
