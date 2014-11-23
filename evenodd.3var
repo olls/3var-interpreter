@@ -1,0 +1,14 @@
+"> ~Take a number input and move it to a.
+|[ ~While a>b do...
+  aa ~b+=2
+]
+=( ~if a==b...
+  riiisisi `1`0`1
+  P `e
+  r
+)
+U( ~if b>a...
+  riiisia+<*>i `1`1`1
+  P `o
+  r
+)

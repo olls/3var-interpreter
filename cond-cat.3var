@@ -1,0 +1,7 @@
+i           ~Set a to 1
+|[          ~While a>0 do...
+   '<O      ~Read in a character to b and output
+   @iiisi   ~Set a to 10
+   ->x      ~Set a to |a-b|
+   #        ~Set b back to zero for loop condition
+]
