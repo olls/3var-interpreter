@@ -21,6 +21,7 @@ int main(int argc, char *argv[]) {
 
   int cond = 0;
   int loop = 0;
+  int lev = 0;
   int i = 0;
 
   char c;
@@ -39,11 +40,11 @@ int main(int argc, char *argv[]) {
         break;
 
       case 'p': // Prints A
-        printf("%d", a);
+        printf("%ld\n", a);
         break;
 
       case 'P': // Prints the ASCII character associated with A
-        printf("%c", a);
+        printf("%c", (char)a);
         break;
 
       case 'x': // Sets A to the absolute value of A
@@ -67,11 +68,11 @@ int main(int argc, char *argv[]) {
         break;
 
       case 'o': // Prints B
-        printf("%d", b);
+        printf("%ld\n", b);
         break;
 
       case 'O': // Prints the ASCII character of B
-        printf("%c", b);
+        printf("%c", (char)b);
         break;
 
       case '0': // Sets B to the absolute value of B
@@ -103,7 +104,7 @@ int main(int argc, char *argv[]) {
         break;
 
       case 'w': // Prints R
-        printf("%d\n", r);
+        printf("%ld\n", r);
         break;
 
       case 'u': // Marks a conditional which executes only if a>b
@@ -120,7 +121,22 @@ int main(int argc, char *argv[]) {
 
       case '(': // Starts an if statement body
         if (!cond) {
-          while (fgetc(file) != ')');
+          lev = 1;
+          while (lev && (c = fgetc(file)) != EOF) {
+            switch (c) {
+              case '(':
+                lev++;
+                break;
+              case ')':
+                lev--;
+                break;
+            }
+          }
+          if (lev) {
+            fprintf(stderr, "Error: conditionals not nested properly.\n");
+            fclose(file);
+            return 2;
+          }
         }
         break;
 
@@ -151,8 +167,21 @@ int main(int argc, char *argv[]) {
         break;
 
       case '}': // Ends a loop which repeats forever
-        while (fgetc(file) != '{') {
-          fseek(file, -2, SEEK_CUR);
+        fseek(file, -2, SEEK_CUR);
+        for (lev = 1; lev && !fseek(file, -2, SEEK_CUR);) {
+          switch (fgetc(file)) {
+            case '}':
+              lev++;
+              break;
+            case '{':
+              lev--;
+              break;
+          }
+        }
+        if (lev) {
+          fprintf(stderr, "Error: loops not nested properly.\n");
+          fclose(file);
+          return 2;
         }
         break;
 
@@ -179,8 +208,21 @@ int main(int argc, char *argv[]) {
             break;
         }
         if (cond) {
-          while (fgetc(file) != '[') {
-            fseek(file, -2, SEEK_CUR);
+          fseek(file, -2, SEEK_CUR);
+          for (lev = 1; lev && !fseek(file, -2, SEEK_CUR);) {
+            switch (fgetc(file)) {
+              case ']':
+                lev++;
+                break;
+              case '[':
+                lev--;
+                break;
+            }
+          }
+          if (lev) {
+            fprintf(stderr, "Error: loops not nested properly.\n");
+            fclose(file);
+            return 2;
           }
         }
         break;
@@ -190,7 +232,7 @@ int main(int argc, char *argv[]) {
         break;
 
       case '"': // Takes a number input from the user and stores it in R
-        r = getchar() - 48;
+        scanf("%ld", &r);
         break;
 
       case 'r': // Resets all variables to 0
@@ -212,11 +254,11 @@ int main(int argc, char *argv[]) {
         break;
 
       case '$': // Toggles comment
-        while (fgetc(file) != '$');
+        while ((c = fgetc(file)) != EOF && c != '$');
         break;
 
       case '~': // Starts a line comment
-        while (fgetc(file) != '\n');
+        while ((c = fgetc(file)) != EOF && c != '\n');
         break;
 
       case '`': // Causes the interpreter to ignore the next character
